@@ -10,7 +10,14 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'your-default-secret-key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split(',')
+# Get the Gitpod workspace URL dynamically
+GITPOD_WORKSPACE_URL = os.getenv('GITPOD_WORKSPACE_URL', 'localhost')
+
+# Add Gitpod-generated URLs to ALLOWED_HOSTS dynamically
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split(',') + [
+    f'{GITPOD_WORKSPACE_URL}',
+    f'*.{GITPOD_WORKSPACE_URL}.ws-us116.gitpod.io',
+]
 
 # Application definition
 INSTALLED_APPS = [
@@ -33,7 +40,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# Update the ROOT_URLCONF to match the correct path
 ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [
@@ -52,7 +58,6 @@ TEMPLATES = [
     },
 ]
 
-# Update the WSGI_APPLICATION to match the correct path
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 # Database configuration
@@ -62,7 +67,7 @@ DATABASES = {
         'NAME': os.getenv('DATABASE_NAME', 'microservice1_db'),
         'USER': os.getenv('DATABASE_USER', 'user'),
         'PASSWORD': os.getenv('DATABASE_PASSWORD', 'password'),
-        'HOST': os.getenv('DATABASE_HOST', 'localhost'),
+        'HOST': os.getenv('DATABASE_HOST', 'postgres'),
         'PORT': os.getenv('DATABASE_PORT', '5432'),
     }
 }

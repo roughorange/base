@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   postgres:
     image: postgres:latest
@@ -25,25 +27,26 @@ services:
       DATABASE_PASSWORD: password123
       DATABASE_HOST: postgres
       DATABASE_PORT: 5432
+      GITPOD_WORKSPACE_URL: ${GITPOD_WORKSPACE_URL}
     depends_on:
       postgres:
         condition: service_healthy
     ports:
-      - "8000:8000"
+      - "8000"
 
   service1_frontend:
     build:
       context: ./micro/service1/frontend  # Path to the frontend Dockerfile
     command: yarn dev
     ports:
-      - "3001:3001"
+      - "3001"
 
   main_frontend:
     build:
       context: ./frontend  # Path to the main frontend Dockerfile
     command: yarn dev
     ports:
-      - "3000:3000"
+      - "3000"
 
 volumes:
   postgres_data:
