@@ -1,10 +1,12 @@
-#!/usr/bin/env python
+# manage.py inside /workspace/base/micro/service1/server
 import os
 import sys
 
+# Add the root folder to the Python path to make the 'server.backend' module accessible
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 if __name__ == "__main__":
-    # Point to the correct settings module for the microservice
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "micro.service1.backend.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

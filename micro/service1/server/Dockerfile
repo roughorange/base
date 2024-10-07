@@ -19,8 +19,10 @@ FROM python:3.10-slim
 # Set the working directory
 WORKDIR /app
 
-# Copy only the necessary dependencies and app from the build stage
+# Copy dependencies from the build stage
 COPY --from=build /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
+
+# Copy the application code from the build stage
 COPY --from=build /app /app
 
 # Expose the default Django port
