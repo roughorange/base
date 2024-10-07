@@ -14,7 +14,7 @@ FROM gitpod/workspace-full:latest
 # Install runtime dependencies
 RUN sudo apt-get update && sudo apt-get install -y python3 python3-pip postgresql-client
 
-# Copy the frontend build artifacts from the build stage
-COPY --from=build /app/build /frontend/build
+# Copy the frontend build artifacts from the build stage (use dist/ instead of build/)
+COPY --from=build /app/dist /frontend/build
 
 USER gitpod

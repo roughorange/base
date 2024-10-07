@@ -1,14 +1,19 @@
 image:
   file: .gitpod.Dockerfile
 
+# Enable Corepack globally for the workspace before any tasks run
 tasks:
-  - name: Enable Corepack and Install Frontend Dependencies
+  - name: Enable Corepack Globally
+    init: corepack enable
+
+  - name: Install Main Frontend Dependencies
     init: |
-      corepack enable
       cd frontend && yarn install
+
   - name: Install Microservice 1 Frontend Dependencies
     init: |
       cd micro/service1/frontend && yarn install
+
   - name: Install Backend Dependencies
     init: |
       cd micro/service1/backend && pip install -r requirements.txt
@@ -16,7 +21,7 @@ tasks:
   - name: Start Main Frontend (Vite)
     command: cd frontend && yarn dev
 
-  - name: Start Microservice 1 Frontend
+  - name: Start Microservice 1 Frontend (Vite)
     command: cd micro/service1/frontend && yarn dev
 
   - name: Start Backend
