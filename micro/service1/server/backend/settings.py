@@ -33,7 +33,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'micro.service1.backend.urls'
+# Update the ROOT_URLCONF to match the correct path
+ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [
     {
@@ -51,7 +52,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'micro.service1.backend.wsgi.application'
+# Update the WSGI_APPLICATION to match the correct path
+WSGI_APPLICATION = 'backend.wsgi.application'
 
 # Database configuration
 DATABASES = {

@@ -16,7 +16,13 @@ tasks:
 
   - name: Install Backend Dependencies
     init: |
-      cd micro/service1/backend && pip install -r requirements.txt
+      cd micro/service1/server && pip install -r requirements.txt
+
+  - name: Install PostgreSQL
+    init: sudo apt-get update && sudo apt-get install -y postgresql postgresql-contrib
+
+  - name: Start PostgreSQL
+    init: sudo service postgresql start
 
   - name: Start Main Frontend (Vite)
     command: cd frontend && yarn dev
@@ -25,7 +31,7 @@ tasks:
     command: cd micro/service1/frontend && yarn dev
 
   - name: Start Backend
-    command: cd micro/service1/backend && python manage.py runserver 0.0.0.0:8000
+    command: cd micro/service1/server && python manage.py runserver 0.0.0.0:8000
 
 ports:
   - port: 3000
@@ -37,3 +43,7 @@ ports:
   - port: 8000
     onOpen: open-preview
     name: Backend
+  - port: 5432
+    onOpen: ignore
+    name: PostgreSQL
+    
