@@ -1,6 +1,9 @@
 # Stage 1: Build Stage
 FROM python:3.10-slim as build
 
+# Install PostgreSQL client and other required dependencies
+RUN apt-get update && apt-get install -y postgresql-client gcc python3-dev
+
 # Set the working directory
 WORKDIR /app
 
