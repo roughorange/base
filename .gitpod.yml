@@ -2,14 +2,16 @@ image:
   file: .gitpod.Dockerfile
 
 tasks:
-  - name: Enable Corepack and Install Main Frontend Dependencies
+  - name: Enable Corepack and Install Frontend Dependencies
     init: |
       corepack enable
       cd frontend && yarn install
-
   - name: Install Microservice 1 Frontend Dependencies
     init: |
       cd micro/service1/frontend && yarn install
+  - name: Install Backend Dependencies
+    init: |
+      cd micro/service1/backend && pip install -r requirements.txt
 
   - name: Start Main Frontend (Vite)
     command: cd frontend && yarn dev
@@ -17,8 +19,8 @@ tasks:
   - name: Start Microservice 1 Frontend
     command: cd micro/service1/frontend && yarn dev
 
-  - name: Install Backend Dependencies
-    init: cd micro/service1/backend && pip install -r requirements.txt
+  - name: Start Backend
+    command: cd micro/service1/backend && python manage.py runserver 0.0.0.0:8000
 
 ports:
   - port: 3000

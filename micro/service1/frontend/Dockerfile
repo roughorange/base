@@ -4,26 +4,26 @@ FROM node:18 as build
 # Set working directory
 WORKDIR /app
 
-# Copy only the package files to install dependencies
+# Copy package.json and yarn.lock to install dependencies
 COPY package.json yarn.lock ./
 
 # Install dependencies
 RUN yarn install
 
-# Copy the rest of the app files
+# Copy the rest of the app files (src, index.html, etc.)
 COPY . .
 
 # Build the frontend
 RUN yarn build
 
-# Stage 2: Final Stage
+# Stage 2: Final Stage (Serve with Nginx)
 FROM nginx:alpine
 
-# Copy build artifacts from the build stage
-COPY --from=build /app/build /usr/share/nginx/html
+# Copy the build artifacts from the build stage
+COPY --from=build /app/dist /usr/share/nginx/html
 
-# Expose the port Nginx will serve on
+# Expose port 80 for the Nginx server
 EXPOSE 80
 
-# Start the Nginx server
+# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
