@@ -27,7 +27,10 @@ find_config_files() {
         -name "*.config" -o \
         -name ".env*" -o \
         -name "Dockerfile*" -o \
-        -name "docker-compose*.yml" \
+        -name "docker-compose*.yml" -o \
+        -name "*.txt" -o \
+        -name ".gitkeep" -o \
+        -name "*.py" \
     \) -type f \
     -not -path "*/node_modules/*" \
     -not -path "*/.git/*" \
@@ -46,6 +49,17 @@ get_folder_structure() {
             echo "${prefix}${item##*/}"
         fi
     done
+}
+
+# New function to limit the file content to 150 lines or show the first 5 lines for larger files
+limit_file_content() {
+    local file="$1"
+    local line_count=$(wc -l < "$file")
+    if [[ "$line_count" -gt 150 ]]; then
+        head -n 5 "$file" | escape_json
+    else
+        cat "$file" | escape_json
+    fi
 }
 
 # Check if fingerprint file exists and prompt for overwrite
@@ -73,7 +87,7 @@ json_output+="},\"configurationFiles\":["
 
 while IFS= read -r file; do
     relpath=$(realpath --relative-to="$(pwd)" "$file")
-    content=$(< "$file" escape_json)
+    content=$(limit_file_content "$file")
     json_output+="{"
     json_output+="\"path\":\"$relpath\","
     json_output+="\"size\":$(stat -c%s "$file"),"

@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+
+# Docker
+*.py~
+
+# Environment variables
+.env
+
+# Node.js (if you add frontend later)
+node_modules/
+
+# OS Files
+.DS_Store
+Thumbs.db
