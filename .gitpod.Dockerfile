@@ -9,7 +9,9 @@ WORKDIR /workspace
 
 # Install Python packages in this stage
 RUN pip install --upgrade pip
-RUN pip install nemo_toolkit[all] torch fastapi uvicorn
+RUN pip install torch
+RUN pip install nemo_toolkit[all]
+RUN pip install fastapi uvicorn
 
 # Stage 2: Create final image with minimal size
 FROM python:3.9-slim
