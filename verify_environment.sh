@@ -28,21 +28,46 @@ find_config_files() {
         -name ".env*" -o \
         -name "Dockerfile*" -o \
         -name "docker-compose*.yml" -o \
-        -name "*.txt" -o \
-        -name ".gitkeep" -o \
-        -name "*.py" \
+        -name ".babelrc" -o \
+        -name ".eslintrc*" -o \
+        -name "tsconfig*.json" -o \
+        -name "webpack.config.js" -o \
+        -name "next.config.js" -o \
+        -name "vite.config.js" -o \
+        -name ".gitignore" -o \
+        -name ".prettierrc*" -o \
+        -name "jest.config.*" -o \
+        -name "rollup.config.*" -o \
+        -name "requirements.txt" -o \
+        -name "main.py" \
     \) -type f \
     -not -path "*/node_modules/*" \
     -not -path "*/.git/*" \
+    -not -path "*/venv/*" \
+    -not -path "*/__pycache__/*" \
+    -not -path "*/.mypy_cache/*" \
+    -not -path "*/.pytest_cache/*" \
+    -not -path "*/.vscode/*" \
+    -not -path "*/.idea/*" \
+    -not -path "*/.vs/*" \
+    -not -path "*/env/*" \
+    -not -path "*/virtualenv/*" \
+    -not -path "*/.env/*" \
+    -not -path "*/build/*" \
+    -not -path "*/dist/*" \
+    -not -name "package-lock.json" \
+    -not -name "yarn.lock" \
     -not -name "$FINGERPRINT_FILE" \
+    -not -name "*.pyc" \
+    -maxdepth 4 \
     2>/dev/null
 }
 
 get_folder_structure() {
-    local dir="$1" prefix="$2" max_depth="$3" current_depth="$4"
+    local dir="$1" prefix="$2" max_depth="3" current_depth="$4"
     [[ "$current_depth" -gt "$max_depth" ]] && return
     for item in "$dir"/*; do
-        if [[ -d "$item" ]]; then
+        if [[ -d "$item" && ! "$item" =~ (node_modules|\.git|venv|__pycache__|\.vscode|\.idea|build|dist)$ ]]; then
             echo "${prefix}${item##*/}/"
             get_folder_structure "$item" "$prefix  " "$max_depth" $((current_depth + 1))
         elif [[ -f "$item" && "${item##*/}" != "$FINGERPRINT_FILE" ]]; then
@@ -51,12 +76,13 @@ get_folder_structure() {
     done
 }
 
-# New function to limit the file content to 150 lines or show the first 5 lines for larger files
 limit_file_content() {
     local file="$1"
-    local line_count=$(wc -l < "$file")
-    if [[ "$line_count" -gt 150 ]]; then
-        head -n 5 "$file" | escape_json
+    local max_size=$((5 * 1024))  # 5 KB
+    local file_size=$(stat -c%s "$file")
+    if [[ "$file_size" -gt "$max_size" ]]; then
+        head -c $max_size "$file" | escape_json
+        echo "... (file truncated)"
     else
         cat "$file" | escape_json
     fi
@@ -76,26 +102,24 @@ json_output="{\"environmentStatus\":{"
 json_output+="\"os\":\"$(uname -s)\","
 json_output+="\"osVersion\":\"$(uname -r)\","
 json_output+="\"architecture\":\"$(uname -m)\","
-json_output+="\"docker\":\"$(command -v docker &> /dev/null && echo "Installed" || echo "Not installed")\","
-json_output+="\"dockerVersion\":\"$(safe_exec "docker --version" || echo "N/A")\","
-json_output+="\"dockerMode\":\"$(docker info 2>/dev/null | grep -q "rootless" && echo "Rootless" || echo "Standard")\","
 json_output+="\"git\":\"$(command -v git &> /dev/null && echo "Installed" || echo "Not installed")\","
 json_output+="\"gitVersion\":\"$(safe_exec "git --version" || echo "N/A")\","
 json_output+="\"gitBranch\":\"$(safe_exec "git rev-parse --abbrev-ref HEAD" || echo "N/A")\","
 json_output+="\"lastCommit\":\"$(safe_exec "git log -1 --format=%cd" || echo "N/A")\""
-json_output+="},\"configurationFiles\":["
+json_output+="},"
 
+json_output+="\"files\":["
 while IFS= read -r file; do
     relpath=$(realpath --relative-to="$(pwd)" "$file")
-    content=$(limit_file_content "$file")
+    content=$(limit_file_content "$file")  # Capture file content here
     json_output+="{"
     json_output+="\"path\":\"$relpath\","
     json_output+="\"size\":$(stat -c%s "$file"),"
     json_output+="\"lastModified\":\"$(stat -c%y "$file")\","
-    json_output+="\"content\":\"$content\""
+    json_output+="\"content\":\"$content\""  # Add file content to JSON output
     json_output+="},"
 done < <(find_config_files ".")
-json_output=${json_output%,}
+json_output=${json_output%,}  # Remove trailing comma
 
 json_output+="],\"folderStructure\":["
 while IFS= read -r line; do

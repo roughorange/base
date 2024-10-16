@@ -1,8 +1,0 @@
-services:
-  app:
-    build: .
-    container_name: tactu
-    ports:
-      - "8000:80"
-    stdin_open: true
-    tty: true
