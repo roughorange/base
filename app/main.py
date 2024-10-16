@@ -1,9 +1,11 @@
-# app/main.py
-
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
-app = FastAPI(title="Speech-to-Text Prototype")
+app = FastAPI()
 
-@app.get("/")
-async def read_root():
-    return {"message": "Welcome to the Speech-to-Text API"}
+@app.get("/api/health")
+async def health_check():
+    return {"status": "ok"}
+
+# Serve the React build directory
+app.mount("/", StaticFiles(directory="frontend/build", html=True), name="frontend")
