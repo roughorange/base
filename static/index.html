@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeMo Speech App</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 p-4">
+    <div class="container mx-auto">
+        <h1 class="text-3xl font-bold mb-4 text-center">Speech-to-Text App</h1>
+        
+        <div id="output" class="p-4 bg-white rounded shadow">
+            <!-- Output from FastAPI will be displayed here -->
+            <p>Waiting for server response...</p>
+        </div>
+
+        <div class="text-center mt-4">
+            <button class="bg-blue-500 text-white py-2 px-4 rounded" onclick="fetchData()">Test API</button>
+        </div>
+    </div>
+
+    <script>
+        function fetchData() {
+            fetch('http://localhost:8000/')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('output').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                })
+                .catch(error => {
+                    document.getElementById('output').textContent = 'Error: ' + error;
+                });
+        }
+    </script>
+</body>
+</html>
