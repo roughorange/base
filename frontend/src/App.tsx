@@ -1,35 +1,28 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react';
+import { ChakraProvider, Box, Text } from '@chakra-ui/react';
+import ReactFlow, { MiniMap, Controls, Background } from 'reactflow';
+import 'reactflow/dist/style.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const nodes = [];
+  const edges = [];
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <ChakraProvider>
+      <Box p={4}>
+        <Text fontSize="2xl" mb={4}>
+          Welcome to Tactu with Chakra UI and React Flow
+        </Text>
+        <Box height="500px" border="1px solid #ddd">
+          <ReactFlow nodes={nodes} edges={edges}>
+            <MiniMap />
+            <Controls />
+            <Background />
+          </ReactFlow>
+        </Box>
+      </Box>
+    </ChakraProvider>
+  );
 }
 
-export default App
+export default App;

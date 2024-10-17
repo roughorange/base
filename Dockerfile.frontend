@@ -5,13 +5,15 @@ FROM node:18
 WORKDIR /app
 
 # Copy the package.json and package-lock.json files
-COPY frontend/package*.json /app/
+COPY frontend/package*.json ./
 
 # Install frontend dependencies
 RUN npm install
+ENV PATH="./node_modules/.bin:$PATH"
+
 
 # Copy the frontend source code into the container
-COPY frontend/ /app
+COPY frontend/ ./
 
 # Expose the port that the frontend listens on
 EXPOSE 3000
