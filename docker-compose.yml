@@ -1,20 +1,39 @@
-services:
-  backend:
-    build:
-      context: .
-      dockerfile: Dockerfile.backend
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./backend:/app
+services:  
+  backend:    
+    build:      
+      context: .      
+      dockerfile: Dockerfile.backend    
+    ports:      
+      - "8000:8000"    
+    volumes:      
+      - ./backend:/app    
+    depends_on:      
+      - db    
+    environment:      
+      - DATABASE_URL=postgresql://postgres:password@db:5432/mydatabase  
 
-  frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile.frontend
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./frontend:/app
-    depends_on:
-      - backend
+  frontend:    
+    build:      
+      context: .      
+      dockerfile: Dockerfile.frontend    
+    ports:      
+      - "3000:3000"  # Map Vite's development server port 3000    
+    volumes:      
+      - ./frontend:/frontend  # Ensure local changes are reflected in the container    
+    depends_on:      
+      - backend  
+
+  db:    
+    image: postgres:17    
+    environment:      
+      POSTGRES_USER: postgres      
+      POSTGRES_PASSWORD: password      
+      POSTGRES_DB: mydatabase    
+    volumes:      
+      - postgres_data:/var/lib/postgresql/data    
+    ports:      
+      - "5432:5432"
+
+# Define named volumes
+volumes:  
+  postgres_data:

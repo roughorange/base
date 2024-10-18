@@ -25,7 +25,7 @@ function App() {
       <Box p={4}>
         {/* Title text for the application */}
         <Text fontSize="2xl" mb={4}>
-          Welcome to Tactu with Chakra UI and React Flow
+          Welcome to BASE with Chakra UI and React Flow
         </Text>
         {/* Container for the flowchart with a fixed height and border */}
         <Box height="500px" border="1px solid #ddd">

@@ -1,18 +1,56 @@
-# Use the official Python 3.11-slim image
-FROM python:3.11-slim
+# Stage 1: Build stage
+FROM python:3.11-slim as build-stage
 
-# Set the working directory in the container
+# Set the working directory
 WORKDIR /app
 
-# Copy the requirements file and install dependencies
-COPY backend/requirements.txt ./
+# Install system dependencies required for Python packages
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    curl \
+    libcurl4-openssl-dev \
+    libcairo2-dev \
+    pkg-config \
+    libgirepository1.0-dev \
+    gir1.2-gtk-3.0 \
+    libyaml-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy the requirements file to the build stage
+COPY backend/requirements.txt /app/requirements.txt
+
+# Install Python dependencies in the build stage
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the backend source code into the container
-COPY backend/ ./
+# Copy the application source code into the build stage
+COPY backend/ /app
 
-# Expose the port that the backend listens on
+# Stage 2: Final image
+FROM python:3.11-slim as final-stage
+
+# Set the working directory
+WORKDIR /app
+
+# Install only runtime dependencies (system libraries)
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    curl \
+    libcurl4-openssl-dev \
+    libcairo2 \
+    libgirepository1.0-dev \
+    gir1.2-gtk-3.0 \
+    libyaml-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy installed Python packages from the build stage
+COPY --from=build-stage /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+
+# Copy the source code from the build stage
+COPY --from=build-stage /app /app
+
+# Expose the port
 EXPOSE 8000
 
-# Command to run the backend server
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Command to run the FastAPI application using python -m uvicorn
+CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
